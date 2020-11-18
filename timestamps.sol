@@ -1,8 +1,35 @@
 pragma solidity ^0.6.0;
 
-contract Task2{
+contract Ownable {
+    address payable private _owner;
 
-    address owner;
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    constructor () internal {
+        _owner = msg.sender;
+        emit OwnershipTransferred(address(0), _owner);
+    }
+
+    function owner() public view returns (address payable) {
+        return _owner;
+    }
+
+    modifier onlyOwner() {
+        require(_owner == msg.sender, "Ownable: caller is not the owner");
+        _;
+    }
+
+   
+    function renounceOwnership() public virtual onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
+    }
+
+ 
+}
+
+contract Timestamp is Ownable{
+
     uint256 deadline;
     
     
@@ -13,12 +40,6 @@ contract Task2{
         uint256 deadline = 1605201660;
     }
     
-    modifier onlyOwner() {
-        require(msg.sender == owner);
-        _;
-    }
-    
-
     function deposit () public payable 
     {
         uint256 _oldBal = mybalance[msg.sender];
@@ -35,7 +56,7 @@ contract Task2{
         mybalance[msg.sender] = 0;
     }
     
-    function balanceCheck() external view returns(uint){
+    function checkBalance() external view returns(uint){
         return address(this).balance;
     }
     
